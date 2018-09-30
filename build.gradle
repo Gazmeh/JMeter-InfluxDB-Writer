@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 sourceCompatibility = 1.7
-version = '1.2x'
+version = '1.4.0'
 def title = 'JMeterInfluxDBListener'
 
 jar {
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '4.0'
-	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '4.0'
+	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.0'
+	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '5.0'
 	compile group: 'org.influxdb', name: 'influxdb-java', version: '2.13'
 }
 
