@@ -14,9 +14,11 @@ jar {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.7.22'
 	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.0'
 	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '5.0'
 	compile group: 'org.influxdb', name: 'influxdb-java', version: '2.13'
