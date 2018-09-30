@@ -45,6 +45,8 @@ public class TestInfluxDbBackendListernFile {
 		.build();
 
 	batchPoints.point(point);
+	
+	assertNotNull(batchPoints.getPoints());
 
 	InfluxDBBackendListenerFile influxFile = new InfluxDBBackendListenerFile();
 	BackendListenerContext context = mock(BackendListenerContext.class);
