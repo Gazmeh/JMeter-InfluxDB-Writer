@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '3.1'
-	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '3.1'
+	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '4.0'
+	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '4.0'
 	compile group: 'org.influxdb', name: 'influxdb-java', version: '2.13'
 }
 
