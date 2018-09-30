@@ -5,3 +5,4 @@
 .settings/
 .classpath
 /influxDBExport.txt
+/jmeter.log

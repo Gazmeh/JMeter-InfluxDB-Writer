@@ -107,6 +107,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
     @Override
     public void setupTest(BackendListenerContext context) throws Exception {
 	LOGGER.info("Influch backend listener is started..");
+	influxDBConfig = new InfluxDBConfig(context);
 	testName = context.getParameter(KEY_TEST_NAME, "Test");
 	runId = context.getParameter(KEY_RUN_ID, "R001");
 	recordSubSamples = Boolean.parseBoolean(context.getParameter(KEY_RECORD_SUB_SAMPLES, "false"));

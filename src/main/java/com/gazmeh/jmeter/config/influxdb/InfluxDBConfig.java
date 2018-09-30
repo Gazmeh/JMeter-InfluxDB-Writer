@@ -88,9 +88,9 @@ public class InfluxDBConfig {
 
     public InfluxDBConfig(BackendListenerContext context) {
 	String influxDBHost = context.getParameter(KEY_INFLUX_DB_HOST);
-	if (StringUtils.isEmpty(influxDBHost)) {
-	    throw new IllegalArgumentException(KEY_INFLUX_DB_HOST + "must not be empty!");
-	}
+//	if (StringUtils.isEmpty(influxDBHost)) {
+//	    throw new IllegalArgumentException(KEY_INFLUX_DB_HOST + "must not be empty!");
+//	}
 	setInfluxDBHost(influxDBHost);
 
 	int influxDBPort = context.getIntParameter(KEY_INFLUX_DB_PORT, InfluxDBConfig.DEFAULT_PORT);
