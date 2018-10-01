@@ -34,6 +34,7 @@ public interface RequestMeasurement {
 	String IDLE_TIME = "idle_time";
 	String CONNECTION_TIME = "connection_time";
 	String LOAD_TIME = "load_time";
+	String TIME_STAMP = "time_stamp";
 
 	String BYTES = "recv_bytes";
 	String SENT_BYTES = "sent_bytes";

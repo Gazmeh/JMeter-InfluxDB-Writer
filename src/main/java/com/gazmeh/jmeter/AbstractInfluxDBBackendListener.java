@@ -97,6 +97,8 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
      */
     private boolean recordSubSamples;
 
+    private boolean useRegexToFilter;
+
     /*
      * (non-Javadoc)
      * 
@@ -139,7 +141,8 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
     private void parseSamplers(BackendListenerContext context) {
 	samplersList = context.getParameter(KEY_SAMPLERS_LIST, "");
 	samplersToFilter = new HashSet<String>();
-	if (context.getBooleanParameter(KEY_USE_REGEX_FOR_SAMPLER_LIST, false)) {
+	useRegexToFilter = context.getBooleanParameter(KEY_USE_REGEX_FOR_SAMPLER_LIST, false);
+	if (useRegexToFilter) {
 	    regexForSamplerList = samplersList;
 	} else {
 	    regexForSamplerList = null;
@@ -174,7 +177,6 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 		    || samplersToFilter.contains(sampleResult.getSampleLabel())) {
 		result.add(sampleResult);
 	    }
-
 	}
 
 	return result;
@@ -205,6 +207,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 		.addField(RequestMeasurement.Fields.CONNECTION_TIME, sampleResult.getConnectTime())//
 		.addField(RequestMeasurement.Fields.BYTES, sampleResult.getBytesAsLong())//
 		.addField(RequestMeasurement.Fields.SENT_BYTES, sampleResult.getSentBytes())//
+		.addField(RequestMeasurement.Fields.TIME_STAMP, sampleResult.getTimeStamp())//
 		.build();
 	return point;
     }
