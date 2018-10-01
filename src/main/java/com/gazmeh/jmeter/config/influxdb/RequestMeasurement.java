@@ -31,9 +31,16 @@ public interface RequestMeasurement {
      */
     public interface Fields {
 	String RESPONSE_TIME = "response_time";
-	String BYTES = "bytes";
+	String IDLE_TIME = "idle_time";
+	String CONNECTION_TIME = "connection_time";
+	String LOAD_TIME = "load_time";
+
+	String BYTES = "recv_bytes";
 	String SENT_BYTES = "sent_bytes";
-	String ERROR_COUNT = "error_count";
+	
+	String ERROR_COUNT = "error";
+	String SUCCESS_COUNT = "success";
+	
 	String THREAD_NAME = "thread_name";
 	String NODE_NAME = "node_name";
     }

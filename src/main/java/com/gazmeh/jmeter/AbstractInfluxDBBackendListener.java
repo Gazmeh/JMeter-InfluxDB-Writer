@@ -198,10 +198,11 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 		// tags
 		.tag(RequestMeasurement.Tags.REQUEST_NAME, sampleResult.getSampleLabel())//
 		// fields
-		.addField(RequestMeasurement.Fields.ERROR_COUNT, sampleResult.getErrorCount())//
-		.addField(RequestMeasurement.Fields.THREAD_NAME, sampleResult.getThreadName())//
-		.addField(RequestMeasurement.Fields.NODE_NAME, nodeName)//
+		.addField(RequestMeasurement.Fields.SUCCESS_COUNT, ((sampleResult.isSuccessful())?1:0))//
+		.addField(RequestMeasurement.Fields.LOAD_TIME, sampleResult.getTime())//
 		.addField(RequestMeasurement.Fields.RESPONSE_TIME, sampleResult.getTime())//
+		.addField(RequestMeasurement.Fields.IDLE_TIME, sampleResult.getIdleTime())//
+		.addField(RequestMeasurement.Fields.CONNECTION_TIME, sampleResult.getConnectTime())//
 		.addField(RequestMeasurement.Fields.BYTES, sampleResult.getBytesAsLong())//
 		.addField(RequestMeasurement.Fields.SENT_BYTES, sampleResult.getSentBytes())//
 		.build();
