@@ -81,9 +81,14 @@ public class InfluxDBBackendListenerClient extends AbstractInfluxDBBackendListen
      */
     private void setupInfluxClient(BackendListenerContext context) {
 	influxDBConfig = new InfluxDBConfig(context);
-	influxDB = InfluxDBFactory.connect(influxDBConfig.getInfluxDBURL(), influxDBConfig.getInfluxUser(),
-		influxDBConfig.getInfluxPassword());
-	influxDB.enableBatch(100, 5, TimeUnit.SECONDS);
+	String user = influxDBConfig.getInfluxUser();
+	if (user != null && !user.isEmpty()) {
+	    influxDB = InfluxDBFactory.connect(influxDBConfig.getInfluxDBURL(), user,
+		    influxDBConfig.getInfluxPassword());
+	} else {
+	    influxDB = InfluxDBFactory.connect(influxDBConfig.getInfluxDBURL());
+	}
+	influxDB.enableBatch(1000, 30, TimeUnit.SECONDS);
 	createDatabaseIfNotExistent();
     }
 

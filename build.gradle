@@ -18,17 +18,13 @@ repositories {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.7.22'
 	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.0'
 	compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '5.0'
 	compile group: 'org.influxdb', name: 'influxdb-java', version: '2.13'
 }
 
-sourceSets {
-    main.java.srcDirs = ['src/main/java']
-    main.resources.srcDirs = ['src/main/resources']
-}
-    
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
 	manifest {
@@ -45,5 +41,10 @@ task fatJar(type: Jar) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
+    gradleVersion = '5.0'
+}
+
+test {
+    useJUnit()
+    maxHeapSize = '1G'
 }
