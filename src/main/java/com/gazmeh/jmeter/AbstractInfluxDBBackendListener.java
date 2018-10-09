@@ -43,6 +43,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
     public static final String KEY_NODE_NAME = "nodeName";
     public static final String KEY_SAMPLERS_LIST = "samplersList";
     public static final String KEY_RECORD_SUB_SAMPLES = "recordSubSamples";
+    public static final String KEY_MEASUREMENT_NAME = "measurementName";
 
     /**
      * Constants.
@@ -99,6 +100,8 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 
     private boolean useRegexToFilter;
 
+    private String measurementName;
+
     /*
      * (non-Javadoc)
      * 
@@ -113,6 +116,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	testName = context.getParameter(KEY_TEST_NAME, "Test");
 	runId = context.getParameter(KEY_RUN_ID, "R001");
 	recordSubSamples = Boolean.parseBoolean(context.getParameter(KEY_RECORD_SUB_SAMPLES, "false"));
+	measurementName = context.getParameter(KEY_RECORD_SUB_SAMPLES, RequestMeasurement.MEASUREMENT_NAME);
 	/*
 	 * Will be used to compare performance of R001, R002, etc of 'Test'
 	 */
@@ -192,15 +196,15 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
     /*
      * Converts sample into a point
      */
-    private Point convertToPoint(SampleResult sampleResult, BackendListenerContext context) {
+    private Point convertToPoint(SampleResult sampleResult, BackendListenerContext context, String measurement) {
 	long time = System.currentTimeMillis() * ONE_MS_IN_NANOSECONDS + getUniqueNumberForTheSamplerThread();
-	Point point = Point.measurement(RequestMeasurement.MEASUREMENT_NAME)
+	Point point = Point.measurement(measurement)
 		// time
 		.time(time, TimeUnit.NANOSECONDS)
 		// tags
 		.tag(RequestMeasurement.Tags.REQUEST_NAME, sampleResult.getSampleLabel())//
 		// fields
-		.addField(RequestMeasurement.Fields.SUCCESS_COUNT, ((sampleResult.isSuccessful())?1:0))//
+		.addField(RequestMeasurement.Fields.SUCCESS_COUNT, ((sampleResult.isSuccessful()) ? 1 : 0))//
 		.addField(RequestMeasurement.Fields.LOAD_TIME, sampleResult.getTime())//
 		.addField(RequestMeasurement.Fields.RESPONSE_TIME, sampleResult.getTime())//
 		.addField(RequestMeasurement.Fields.IDLE_TIME, sampleResult.getIdleTime())//
@@ -236,12 +240,25 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	// Gather all the listeners
 	List<SampleResult> allSampleResults = createSampleList(sampleResults);
 	BatchPoints batchPoints = createBatchPoints(context);
+	String measurement = getMeasurementName();
 	for (SampleResult sampleResult : allSampleResults) {
-	    Point point = convertToPoint(sampleResult, context);
+	    Point point = convertToPoint(sampleResult, context, measurement);
 	    batchPoints.point(point);
 	}
 	batchPoints.point(createThreadsPoint(context));
 	writeBatchPoints(batchPoints);
+    }
+
+    /**
+     * Fetch measurement name
+     * 
+     * @return
+     */
+    private String getMeasurementName() {
+	if (measurementName != null && !measurementName.isEmpty()) {
+	    return measurementName;
+	}
+	return RequestMeasurement.MEASUREMENT_NAME;
     }
 
     /*
@@ -275,6 +292,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	arguments.addArgument(KEY_SAMPLERS_LIST, ".*");
 	arguments.addArgument(KEY_USE_REGEX_FOR_SAMPLER_LIST, "true");
 	arguments.addArgument(KEY_RECORD_SUB_SAMPLES, "true");
+	arguments.addArgument(KEY_MEASUREMENT_NAME, RequestMeasurement.MEASUREMENT_NAME);
 
 	arguments.addArgument(InfluxDBConfig.KEY_INFLUX_DB_DATABASE, InfluxDBConfig.DEFAULT_DATABASE);
 	arguments.addArgument(InfluxDBConfig.KEY_RETENTION_POLICY, InfluxDBConfig.DEFAULT_RETENTION_POLICY);
