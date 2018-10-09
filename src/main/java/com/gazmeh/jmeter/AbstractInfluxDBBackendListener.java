@@ -116,7 +116,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	testName = context.getParameter(KEY_TEST_NAME, "Test");
 	runId = context.getParameter(KEY_RUN_ID, "R001");
 	recordSubSamples = Boolean.parseBoolean(context.getParameter(KEY_RECORD_SUB_SAMPLES, "false"));
-	measurementName = context.getParameter(KEY_RECORD_SUB_SAMPLES, RequestMeasurement.MEASUREMENT_NAME);
+	measurementName = context.getParameter(KEY_MEASUREMENT_NAME, RequestMeasurement.MEASUREMENT_NAME);
 	/*
 	 * Will be used to compare performance of R001, R002, etc of 'Test'
 	 */
@@ -165,13 +165,7 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	// list
 	List<SampleResult> allSampleResults = new ArrayList<>();
 	for (SampleResult sampleResult : sampleResults) {
-	    allSampleResults.add(sampleResult);
-
-	    if (recordSubSamples) {
-		for (SampleResult subResult : sampleResult.getSubResults()) {
-		    allSampleResults.add(subResult);
-		}
-	    }
+	    addSamplesToList(allSampleResults, sampleResult, recordSubSamples);
 	}
 
 	// filter
@@ -184,6 +178,17 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	}
 
 	return result;
+    }
+
+    private void addSamplesToList(List<SampleResult> allSampleResults, SampleResult sampleResult,
+	    boolean recordSubSamples2) {
+	allSampleResults.add(sampleResult);
+
+	if (recordSubSamples) {
+	    for (SampleResult subResult : sampleResult.getSubResults()) {
+		addSamplesToList(allSampleResults, subResult, recordSubSamples);
+	    }
+	}
     }
 
     /**
