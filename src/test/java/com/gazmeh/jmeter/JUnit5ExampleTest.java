@@ -1,4 +1,4 @@
-package com.gazmeh.jmeter;
+/*package com.gazmeh.jmeter;
 
 import org.junit.Test;
 
@@ -9,4 +9,4 @@ public class JUnit5ExampleTest {
     public void justAnExample() {
         System.out.println("This test method should be run");
     }
-}
+}*/
