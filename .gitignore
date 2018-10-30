@@ -7,3 +7,4 @@
 /influxDBExport.txt
 /jmeter.log
 /target/
+/dependency-reduced-pom.xml
