@@ -6,3 +6,4 @@
 .classpath
 /influxDBExport.txt
 /jmeter.log
+/target/
