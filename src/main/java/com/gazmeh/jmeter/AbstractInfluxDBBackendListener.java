@@ -102,6 +102,8 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 
     private String measurementName;
 
+    private boolean virtualUserPoint = true;
+
     /*
      * (non-Javadoc)
      * 
@@ -194,14 +196,19 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
     /**
      * Try to get a unique number for the sampler thread
      */
-    private int getUniqueNumberForTheSamplerThread() {
+    protected int getUniqueNumberForTheSamplerThread() {
 	return randomNumberGenerator.nextInt(ONE_MS_IN_NANOSECONDS);
     }
 
-    /*
+    /**
      * Converts sample into a point
+     * 
+     * @param sampleResult
+     * @param context
+     * @param measurement
+     * @return
      */
-    private Point convertToPoint(SampleResult sampleResult, BackendListenerContext context, String measurement) {
+    protected Point convertToPoint(SampleResult sampleResult, BackendListenerContext context, String measurement) {
 	long time = System.currentTimeMillis() * ONE_MS_IN_NANOSECONDS + getUniqueNumberForTheSamplerThread();
 	Point point = Point.measurement(measurement)
 		// time
@@ -221,7 +228,13 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	return point;
     }
 
-    private BatchPoints createBatchPoints(BackendListenerContext context) {
+    /**
+     * Create a batch points
+     * 
+     * @param context
+     * @return
+     */
+    protected BatchPoints createBatchPoints(BackendListenerContext context) {
 	BatchPoints batchPoints = BatchPoints//
 		.database(influxDBConfig.getInfluxDatabase())//
 		.retentionPolicy(influxDBConfig.getInfluxRetentionPolicy())//
@@ -250,8 +263,18 @@ public abstract class AbstractInfluxDBBackendListener implements BackendListener
 	    Point point = convertToPoint(sampleResult, context, measurement);
 	    batchPoints.point(point);
 	}
-	batchPoints.point(createThreadsPoint(context));
+	if (isVirtualUserPoint()) {
+	    batchPoints.point(createThreadsPoint(context));
+	}
 	writeBatchPoints(batchPoints);
+    }
+
+    public boolean isVirtualUserPoint() {
+	return virtualUserPoint;
+    }
+
+    public void setVirtualUserPoint(boolean virtualUserPoint) {
+	this.virtualUserPoint = virtualUserPoint;
     }
 
     /**
