@@ -47,9 +47,22 @@ public class SayanUtil {
 
 	// Message type
 	String msgType = JsonPath.read(document, "$.Body.MsgType");
+
+	// System track number
+	String systemTraceNo = JsonPath.read(document, "$.Body.SystemTraceNo");
+
+	// ProcessingCode
+	String processingCode = JsonPath.read(document, "$.Body.ProcessingCode");
+	
+	// ProcessingCode
+	String terminalId = JsonPath.read(document, "$.Body.TerminalId");
+
 	return pointBuilder//
 		.tag("MsgType", msgType)//
-		.addField("SayanDateTime", date.getTime());
+		.tag("TerminalId", terminalId)//
+		.tag("ProcessingCode", processingCode)//
+		.addField("SystemTraceNo", systemTraceNo)//
+		.addField("DateTime", date.getTime());
     }
 
 }
