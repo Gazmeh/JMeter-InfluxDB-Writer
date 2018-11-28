@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.crypto.Data;
+
 import org.apache.jmeter.samplers.SampleResult;
 import org.influxdb.dto.Point.Builder;
 
@@ -20,7 +22,12 @@ import com.jayway.jsonpath.JsonPath;
  */
 public class SayanUtil {
 
-    static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    static SimpleDateFormat dateTimeFormat[] = { //
+	    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"), //
+	    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"), //
+	    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"), //
+	    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"), //
+    };
 
     /**
      * Fill point with sayan sample result
@@ -43,7 +50,15 @@ public class SayanUtil {
 
 	// local date time
 	String localTimeStr = JsonPath.read(document, "$.Body.DateTime");
-	Date date = dateTimeFormat.parse(localTimeStr);
+	Date date = null;
+	int index = 0x0;
+	while (date == null && index < dateTimeFormat.length) {
+	    convertDate(dateTimeFormat[index], localTimeStr);
+	    index++;
+	}
+	if (date == null) {
+	    date = new Date();
+	}
 
 	// Message type
 	String msgType = JsonPath.read(document, "$.Body.MsgType");
@@ -53,7 +68,7 @@ public class SayanUtil {
 
 	// ProcessingCode
 	String processingCode = JsonPath.read(document, "$.Body.ProcessingCode");
-	
+
 	// ProcessingCode
 	String terminalId = JsonPath.read(document, "$.Body.TerminalId");
 
@@ -63,6 +78,14 @@ public class SayanUtil {
 		.tag("ProcessingCode", processingCode)//
 		.addField("SystemTraceNo", systemTraceNo)//
 		.addField("DateTime", date.getTime());
+    }
+
+    private static Date convertDate(SimpleDateFormat format, String localTimeStr) {
+	try {
+	    return format.parse(localTimeStr);
+	} catch (Exception e) {
+	    return null;
+	}
     }
 
 }
