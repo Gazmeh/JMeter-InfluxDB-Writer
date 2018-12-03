@@ -6,10 +6,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.xml.crypto.Data;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.samplers.SampleResult;
 import org.influxdb.dto.Point.Builder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -21,6 +22,8 @@ import com.jayway.jsonpath.JsonPath;
  *
  */
 public class SayanUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(SayanUtil.class);
 
     static SimpleDateFormat dateTimeFormat[] = { //
 	    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"), //
@@ -34,11 +37,11 @@ public class SayanUtil {
      * 
      * @param sampleResult
      * @param pointBuilder
-     * @return point builder
+     * @return system track number
      * @throws ParseException               if the localdatetime is not valid
      * @throws UnsupportedEncodingException
      */
-    public static Builder fillPoint(SampleResult sampleResult, Builder pointBuilder)
+    public static String fillPoint(SampleResult sampleResult, Builder pointBuilder)
 	    throws ParseException, UnsupportedEncodingException {
 	String charsetName = sampleResult.getDataEncodingWithDefault();
 	byte[] buff = sampleResult.getResponseData();
@@ -49,41 +52,61 @@ public class SayanUtil {
 		.parse(new ByteArrayInputStream(buff), charsetName);
 
 	// local date time
-	String localTimeStr = JsonPath.read(document, "$.Body.DateTime");
-	Date date = null;
-	int index = 0x0;
-	while (date == null && index < dateTimeFormat.length) {
-	    convertDate(dateTimeFormat[index], localTimeStr);
-	    index++;
-	}
-	if (date == null) {
-	    date = new Date();
-	}
+//	long time = -1;
+//	String localTimeStr = getJsonPartOrNull(document, "$.Body.DateTime", null);
+//	Date date = null;
+//	int index = 0x0;
+//	while (localTimeStr != null && date == null && index < dateTimeFormat.length) {
+//	    date = convertDate(dateTimeFormat[index], localTimeStr);
+//	    index++;
+//	}
+//	if (date != null) {
+//	    time = date.getTime();
+//	}
 
 	// Message type
-	String msgType = JsonPath.read(document, "$.Body.MsgType");
+	String msgType = getJsonPartOrNull(document, "$.Body.MsgType", "Null");
 
 	// System track number
-	String systemTraceNo = JsonPath.read(document, "$.Body.SystemTraceNo");
+	String systemTraceNo = getJsonPartOrNull(document, "$.Body.SystemTraceNo", "Null");
 
 	// ProcessingCode
-	String processingCode = JsonPath.read(document, "$.Body.ProcessingCode");
+	String processingCode = getJsonPartOrNull(document, "$.Body.ProcessingCode", "Null");
 
 	// ProcessingCode
-	String terminalId = JsonPath.read(document, "$.Body.TerminalId");
+	String terminalId = getJsonPartOrNull(document, "$.Body.TerminalId", "Null");
 
-	return pointBuilder//
+	// ProcessingCode
+	String responseCode = getJsonPartOrNull(document, "$.Body.ResponseCode", "Null");
+
+	pointBuilder//
 		.tag("MsgType", msgType)//
 		.tag("TerminalId", terminalId)//
 		.tag("ProcessingCode", processingCode)//
-		.addField("SystemTraceNo", systemTraceNo)//
-		.addField("DateTime", date.getTime());
+		.tag("ResponseCode", responseCode)//
+		.addField("SystemTraceNo", systemTraceNo);
+
+	return systemTraceNo;
+    }
+
+    public static String getJsonPartOrNull(Object document, String path, String defaultVal) {
+	try {
+	    String value = JsonPath.read(document, path);
+	    if (StringUtils.isEmpty(value)) {
+		return defaultVal;
+	    }
+	    return value;
+	} catch (Exception e) {
+	    logger.info("Fail to get response code", e);
+	    return defaultVal;
+	}
     }
 
     private static Date convertDate(SimpleDateFormat format, String localTimeStr) {
 	try {
 	    return format.parse(localTimeStr);
 	} catch (Exception e) {
+	    logger.info("Fail to parse date", e);
 	    return null;
 	}
     }
