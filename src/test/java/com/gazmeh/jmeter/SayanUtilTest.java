@@ -1,4 +1,4 @@
-package com.gazmeh.jmeter;
+/*package com.gazmeh.jmeter;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,3 +58,4 @@ public class SayanUtilTest {
 	System.out.println(pointBuilder.build().lineProtocol());
     }
 }
+*/
